@@ -1,3 +1,3 @@
 # DMX Core 100 - Standalone Controller
 
-[Link to private Wiki](https://bitbucket.org/dmxcore/dmxcore100/wiki/Home)
+[Make sure you check out the Wiki for documentation](https://github.com/DMXCore/DmxCore100/wiki)
