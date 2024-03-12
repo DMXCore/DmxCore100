@@ -1,8 +1,8 @@
 [
   {
-    "Title": "Q-Sys",
+    "Title": "External Control",
     "Items": [],
-    "Type": "QSYS",
+    "Type": "EXTCTRL",
     "DestinationCode": null
   }
 ]

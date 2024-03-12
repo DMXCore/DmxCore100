@@ -1,0 +1,114 @@
+[
+  {
+    "Title": "Custom 1",
+    "Items": [
+      {
+        "Name": "Preset 1",
+        "Description": "Test of preset 1",
+        "SubMenu": null,
+        "Icon": null,
+        "Type": "PRESET",
+        "DestinationCode": "PRESET1",
+        "Loop": null,
+        "FadeDurationMS": null
+      },
+      {
+        "Name": "Cue 1",
+        "Description": "Test of Cue 1",
+        "SubMenu": null,
+        "Icon": null,
+        "Type": "CUE",
+        "DestinationCode": "CUE1",
+        "Loop": null,
+        "FadeDurationMS": null
+      }
+    ],
+    "Type": "ITEMS",
+    "DestinationCode": null
+  },
+  {
+    "Title": "External Control",
+    "Items": [],
+    "Type": "EXTCTRL",
+    "DestinationCode": "PAGE2"
+  },
+  {
+    "Title": "Sub Menu",
+    "Items": [
+      {
+        "Name": "Menu 1",
+        "Description": "Sub menu 1",
+        "SubMenu": {
+          "Title": "Sub menu 1 Title",
+          "Items": [
+            {
+              "Name": "Item 1",
+              "Description": "Description Text",
+              "SubMenu": null,
+              "Icon": null,
+              "Type": "CUE",
+              "DestinationCode": "CUE3",
+              "Loop": null,
+              "FadeDurationMS": null
+            },
+            {
+              "Name": "Item 2",
+              "Description": "Description Text 2",
+              "SubMenu": null,
+              "Icon": null,
+              "Type": "CUE",
+              "DestinationCode": "CUE4",
+              "Loop": null,
+              "FadeDurationMS": null
+            }
+          ],
+          "Type": "ITEMS",
+          "DestinationCode": null
+        },
+        "Icon": null,
+        "Type": "SUBMENU",
+        "DestinationCode": null,
+        "Loop": null,
+        "FadeDurationMS": null
+      },
+      {
+        "Name": "Menu 2",
+        "Description": "Sub menu 2",
+        "SubMenu": {
+          "Title": "Sub menu 2 Title",
+          "Items": [
+            {
+              "Name": "Item 1a",
+              "Description": "Description Text",
+              "SubMenu": null,
+              "Icon": null,
+              "Type": "PRESET",
+              "DestinationCode": "PRESET3",
+              "Loop": null,
+              "FadeDurationMS": null
+            },
+            {
+              "Name": "Item 2a",
+              "Description": "Description Text 2",
+              "SubMenu": null,
+              "Icon": null,
+              "Type": "PRESET",
+              "DestinationCode": "PRESET4",
+              "Loop": null,
+              "FadeDurationMS": null
+            }
+          ],
+          "Type": "ITEMS",
+          "DestinationCode": null
+        },
+        "Icon": null,
+        "Type": "SUBMENU",
+        "DestinationCode": null,
+        "Loop": null,
+        "FadeDurationMS": null
+      }
+    ],
+    "Type": "ITEMS",
+    "DestinationCode": null
+  }
+]
