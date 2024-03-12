@@ -1,0 +1,107 @@
+{
+  "Pages": [
+    {
+      "Code": "SAMPLE1",
+      "Title": "Q-Sys Green Room Control",
+      "Sections": [
+        {
+          "Title": "Power",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "ON",
+              "Description": "Left TV On",
+              "ControlId": "Lobby1Power",
+              "SelectorValue": 1,
+              "Icon": "poweron40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "OFF",
+              "Description": "Left TV Off",
+              "ControlId": "Lobby1Power",
+              "SelectorValue": 0,
+              "Icon": "poweroff40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "OFF",
+              "Description": "Right TV On",
+              "ControlId": "Lobby2Power",
+              "SelectorValue": 1,
+              "Icon": "poweron40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "OFF",
+              "Description": "Right TV Off",
+              "ControlId": "Lobby2Power",
+              "SelectorValue": 0,
+              "Icon": "poweroff40x40.png"
+            }
+          ]
+        },
+        {
+          "Title": "Input",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "Auditorium Audio",
+              "Description": "Service Audio",
+              "ControlId": "LobbySrc1",
+              "Confirm": false,
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Pre Service",
+              "Description": "House Music",
+              "ControlId": "LobbySrc2",
+              "Confirm": false
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Local Bluetooth",
+              "Description": "Lobby Bluetooth Input",
+              "ControlId": "LobbySrc3",
+              "Confirm": false
+            }
+          ]
+        },
+        {
+          "Title": "Video Source",
+          "Enabled": true,
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "Auditorium Audio",
+              "Description": "Service Audio",
+              "ControlId": "LobbySrc1",
+              "Confirm": false,
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Pre Service",
+              "Description": "House Music",
+              "ControlId": "LobbySrc2",
+              "Confirm": false
+            }
+          ]
+        },
+        {
+          "Title": "Volume",
+          "Controls": [
+            {
+              "ControlType": "LEVEL",
+              "Name": "Volume",
+              "Description": null,
+              "ControlId": "LobbyVolume",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

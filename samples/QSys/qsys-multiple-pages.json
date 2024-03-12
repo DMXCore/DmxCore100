@@ -1,0 +1,164 @@
+{
+  "Pages": [
+    {
+      "Code": "SAMPLE1",
+      "Title": "Q-Sys Sample page",
+      "Sections": [
+        {
+          "Title": "Power",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "ON",
+              "Description": "Power On",
+              "ControlId": "Audio Power",
+              "SelectorValue": 0,
+              "Icon": "poweron40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "OFF",
+              "Description": "Power Off",
+              "ControlId": "Audio Power",
+              "SelectorValue": 1,
+              "Confirm": true,
+              "Icon": "poweroff40x40.png"
+            },
+            {
+              "ControlType": "TOGGLEBUTTON",
+              "Name": "Mute",
+              "Description": "Mute on/off",
+              "ControlId": "AudioMute",
+              "Icon": "mute40x40.png"
+            }
+          ]
+        },
+        {
+          "Title": "Input",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "Cable TV",
+              "Description": "Cable TV Receiver",
+              "ControlId": "DMXCORE1_Input1",
+              "Confirm": false,
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Apple TV",
+              "Description": "Apple TV",
+              "ControlId": "DMXCORE1_Input2",
+              "Confirm": false
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "BluRay",
+              "Description": "BluRay Player",
+              "ControlId": "DMXCORE1_Input3",
+              "Confirm": false
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Input 4",
+              "Description": "Xbox",
+              "ControlId": "DMXCORE1_Input4",
+              "Confirm": false
+            }
+          ]
+        },
+        {
+          "Title": "Volume",
+          "Controls": [
+            {
+              "ControlType": "LEVEL",
+              "Name": "Volume",
+              "Description": null,
+              "ControlId": "DMXCORE1_Level"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Code": "SAMPLE2",
+      "Title": "Q-Sys Sample page 2",
+      "Sections": [
+        {
+          "Title": "Power Room 2",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "ON",
+              "Description": "Power On",
+              "ControlId": "Audio Power",
+              "SelectorValue": 0,
+              "Icon": "poweron40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "OFF",
+              "Description": "Power Off",
+              "ControlId": "Audio Power",
+              "SelectorValue": 1,
+              "Confirm": true,
+              "Icon": "poweroff40x40.png"
+            },
+            {
+              "ControlType": "TOGGLEBUTTON",
+              "Name": "Mute",
+              "Description": "Mute on/off",
+              "ControlId": "AudioMute",
+              "Icon": "mute40x40.png"
+            }
+          ]
+        },
+        {
+          "Title": "Input Room 2",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "Cable TV",
+              "Description": "Cable TV Receiver",
+              "ControlId": "DMXCORE1_Input1",
+              "Confirm": false,
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Apple TV",
+              "Description": "Apple TV",
+              "ControlId": "DMXCORE1_Input2",
+              "Confirm": false
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "BluRay",
+              "Description": "BluRay Player",
+              "ControlId": "DMXCORE1_Input3",
+              "Confirm": false
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Input 4",
+              "Description": "Xbox",
+              "ControlId": "DMXCORE1_Input4",
+              "Confirm": false
+            }
+          ]
+        },
+        {
+          "Title": "Volume Room 2",
+          "Controls": [
+            {
+              "ControlType": "LEVEL",
+              "Name": "Volume",
+              "Description": null,
+              "ControlId": "DMXCORE1_Level"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
