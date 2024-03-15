@@ -1,0 +1,91 @@
+{
+  "Pages": [
+    {
+      "Code": "SAMPLE1",
+      "Title": "Q-Sys Sample page",
+      "KnobButtonControl": {
+        "ControlType": "TOGGLEBUTTON",
+        "ControlId": "Mute"
+      },
+      "Sections": [
+        {
+          "Title": "Video Source",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "TV 1",
+              "Description": "Program",
+              "ControlId": "Lobby1Src1",
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "TV 1",
+              "Description": "Pre Service",
+              "ControlId": "Lobby1Src2"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "TV 2",
+              "Description": "Program",
+              "ControlId": "Lobby2Src1"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "TV 2",
+              "Description": "Pre Service",
+              "ControlId": "Lobby2Src2"
+            }
+          ]
+        },
+        {
+          "Title": "Input",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "Cable TV",
+              "Description": "Cable TV Receiver",
+              "ControlId": "DMXCORE1_Input1",
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Apple TV",
+              "Description": "Apple TV",
+              "ControlId": "DMXCORE1_Input2"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "BluRay",
+              "Description": "BluRay Player",
+              "ControlId": "DMXCORE1_Input3"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Input 4",
+              "Description": "Xbox",
+              "ControlId": "DMXCORE1_Input4"
+            }
+          ]
+        },
+        {
+          "Title": "Volume",
+          "Controls": [
+            {
+              "ControlType": "LEVEL",
+              "Name": "Lobby",
+              "ControlId": "DMXCORE1_Level",
+              "SwitchTimeoutSeconds": 5
+            },
+            {
+              "ControlType": "LEVEL",
+              "Name": "Bar",
+              "ControlId": "DMXCORE1_Level2",
+              "Color": "#C00000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
