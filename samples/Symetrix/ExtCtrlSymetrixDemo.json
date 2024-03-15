@@ -1,0 +1,83 @@
+{
+  "Pages": [
+    {
+      "Code": "SAMPLE1",
+      "Title": "Symetrix Sample page",
+      "Sections": [
+        {
+          "Title": "Power",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "ON",
+              "Description": "Power On",
+              "ControlId": "4",
+              "SelectorValue": 65535,
+              "Icon": "poweron40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "OFF",
+              "Description": "Power Off",
+              "ControlId": "4",
+              "SelectorValue": 0,
+              "Confirm": true,
+              "Icon": "poweroff40x40.png"
+            },
+            {
+              "ControlType": "TOGGLEBUTTON",
+              "Name": "MUTE",
+              "Description": "Mute on/off",
+              "ControlId": "2",
+              "Icon": "mute40x40.png"
+            }
+          ]
+        },
+        {
+          "Title": "Input",
+          "Controls": [
+            {
+              "ControlType": "BUTTON",
+              "Name": "Cable TV",
+              "Description": "Cable TV Receiver",
+              "ControlId": "3",
+              "SelectorValue": 0,
+              "Icon": "input40x40.png"
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Apple TV",
+              "Description": "Apple TV",
+              "ControlId": "3",
+              "SelectorValue": 21845
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "BluRay",
+              "Description": "BluRay Player",
+              "ControlId": "3",
+              "SelectorValue": 43690
+            },
+            {
+              "ControlType": "BUTTON",
+              "Name": "Input 4",
+              "Description": "Xbox",
+              "ControlId": "3",
+              "SelectorValue": 65535
+            }
+          ]
+        },
+        {
+          "Title": "Volume",
+          "Controls": [
+            {
+              "ControlType": "LEVEL",
+              "Name": "Volume",
+              "ControlId": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
