@@ -1,6 +1,6 @@
 [
   {
-    "Title": "Custom 1",
+    "Name": "Custom 1",
     "Items": [
       {
         "Name": "Preset 1",
@@ -27,19 +27,28 @@
     "DestinationCode": null
   },
   {
-    "Title": "External Control",
+    "Name": "Ext. Ctrl 1",
+    "Description": "External Control 1",
     "Items": [],
     "Type": "EXTCTRL",
-    "DestinationCode": "PAGE2"
+    "DestinationCode": "SAMPLE1"
   },
   {
-    "Title": "Sub Menu",
+    "Name": "Ext. Ctrl 2",
+    "Description": "External Control 2",
+    "Icon": "poweron",
+    "Items": [],
+    "Type": "EXTCTRL",
+    "DestinationCode": "SAMPLE2"
+  },
+  {
+    "Name": "Sub Menu",
     "Items": [
       {
         "Name": "Menu 1",
         "Description": "Sub menu 1",
         "SubMenu": {
-          "Title": "Sub menu 1 Title",
+          "Name": "Sub menu 1 Title",
           "Items": [
             {
               "Name": "Item 1",
@@ -75,7 +84,7 @@
         "Name": "Menu 2",
         "Description": "Sub menu 2",
         "SubMenu": {
-          "Title": "Sub menu 2 Title",
+          "Name": "Sub menu 2 Title",
           "Items": [
             {
               "Name": "Item 1a",
