@@ -1,0 +1,21 @@
+[
+  {
+    "Name": "Custom 1",
+    "Items": [
+      {
+        "Name": "Preset 1",
+        "Description": "Test of preset 1",
+        "Type": "PRESET",
+        "DestinationCode": "PRESET1"
+      },
+      {
+        "Name": "Preset 2",
+        "Description": "Test of preset 2",
+        "Type": "PRESET",
+        "DestinationCode": "PRESET2"
+      }
+    ],
+    "Type": "ITEMS",
+    "Logo": "DMX-logo"
+  }
+]
