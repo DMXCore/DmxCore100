@@ -5,26 +5,17 @@
       {
         "Name": "Preset 1",
         "Description": "Test of preset 1",
-        "SubMenu": null,
-        "Icon": null,
         "Type": "PRESET",
-        "DestinationCode": "PRESET1",
-        "Loop": null,
-        "FadeDurationMS": null
+        "DestinationCode": "PRESET1"
       },
       {
         "Name": "Cue 1",
         "Description": "Test of Cue 1",
-        "SubMenu": null,
-        "Icon": null,
         "Type": "CUE",
-        "DestinationCode": "CUE1",
-        "Loop": null,
-        "FadeDurationMS": null
+        "DestinationCode": "CUE1"
       }
     ],
-    "Type": "ITEMS",
-    "DestinationCode": null
+    "Type": "ITEMS"
   },
   {
     "Name": "Ext. Ctrl 1",
@@ -36,10 +27,10 @@
   {
     "Name": "Ext. Ctrl 2",
     "Description": "External Control 2",
-    "Icon": "poweron",
     "Items": [],
     "Type": "EXTCTRL",
-    "DestinationCode": "SAMPLE2"
+    "DestinationCode": "SAMPLE2",
+    "Icon": "poweron"
   },
   {
     "Name": "Sub Menu",
@@ -53,32 +44,19 @@
             {
               "Name": "Item 1",
               "Description": "Description Text",
-              "SubMenu": null,
-              "Icon": null,
               "Type": "CUE",
-              "DestinationCode": "CUE3",
-              "Loop": null,
-              "FadeDurationMS": null
+              "DestinationCode": "CUE3"
             },
             {
               "Name": "Item 2",
               "Description": "Description Text 2",
-              "SubMenu": null,
-              "Icon": null,
               "Type": "CUE",
-              "DestinationCode": "CUE4",
-              "Loop": null,
-              "FadeDurationMS": null
+              "DestinationCode": "CUE4"
             }
           ],
-          "Type": "ITEMS",
-          "DestinationCode": null
+          "Type": "ITEMS"
         },
-        "Icon": null,
-        "Type": "SUBMENU",
-        "DestinationCode": null,
-        "Loop": null,
-        "FadeDurationMS": null
+        "Type": "SUBMENU"
       },
       {
         "Name": "Menu 2",
@@ -89,35 +67,21 @@
             {
               "Name": "Item 1a",
               "Description": "Description Text",
-              "SubMenu": null,
-              "Icon": null,
               "Type": "PRESET",
-              "DestinationCode": "PRESET3",
-              "Loop": null,
-              "FadeDurationMS": null
+              "DestinationCode": "PRESET3"
             },
             {
               "Name": "Item 2a",
               "Description": "Description Text 2",
-              "SubMenu": null,
-              "Icon": null,
               "Type": "PRESET",
-              "DestinationCode": "PRESET4",
-              "Loop": null,
-              "FadeDurationMS": null
+              "DestinationCode": "PRESET4"
             }
           ],
-          "Type": "ITEMS",
-          "DestinationCode": null
+          "Type": "ITEMS"
         },
-        "Icon": null,
-        "Type": "SUBMENU",
-        "DestinationCode": null,
-        "Loop": null,
-        "FadeDurationMS": null
+        "Type": "SUBMENU"
       }
     ],
-    "Type": "ITEMS",
-    "DestinationCode": null
+    "Type": "ITEMS"
   }
 ]
