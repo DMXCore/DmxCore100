@@ -15,7 +15,9 @@
         "DestinationCode": "CUE1"
       }
     ],
-    "Type": "ITEMS"
+    "Type": "ITEMS",
+    "Logo": "LogoName",
+    "LogoHeight": 80
   },
   {
     "Name": "Ext. Ctrl 1",
