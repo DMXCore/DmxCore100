@@ -1,0 +1,14 @@
+[
+  {
+    "Name": "OnlyPresets",
+    "Items": [
+      {
+        "Name": "Presets",
+        "Description": "All Presets",
+        "Type": "PRESETS"
+      }
+    ],
+    "Type": "ITEMS",
+    "Logo": "DMX-logo"
+  }
+]
