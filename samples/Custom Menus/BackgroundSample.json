@@ -1,10 +1,12 @@
 [
   {
     "Name": "Backup Lights",
+    "SubTitle": "Don't forget to turn off the lighting console",
     "Items": [
       {
         "Name": "Our Cues",
         "Description": "All Cues",
+        "SubTitle": "Pick a cue",
         "Type": "CUES",
         "Loop": 0,
         "Background": "background-gradient-2"
