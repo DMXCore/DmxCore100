@@ -17,7 +17,8 @@
       {
         "Name": "Stop",
         "Description": "Stop Playback",
-        "Type": "STOPPLAYBACK"
+        "Type": "STOPPLAYBACK",
+        "Confirm": "True"
       }
     ],
     "Type": "ITEMS",
