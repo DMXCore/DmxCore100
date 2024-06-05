@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "Custom 1",
+    "Items": [
+      {
+        "Name": "Presets",
+        "Description": "All Presets",
+        "Type": "PRESETS",
+        "FadeDurationMS": 500
+      },
+      {
+        "Name": "Cues",
+        "Description": "All Cues",
+        "Type": "CUES",
+        "Loop": 0
+      },
+      {
+        "Name": "Stop",
+        "Description": "Stop Playback",
+        "Type": "STOPPLAYBACK"
+      }
+    ],
+    "Type": "ITEMS",
+    "Logo": "DMX-logo"
+  }
+]
