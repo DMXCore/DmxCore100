@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "Backup Lights",
+    "Items": [
+      {
+        "Name": "Our Cues",
+        "Description": "All Cues",
+        "Type": "CUES",
+        "Loop": 0,
+        "Background": "background-gradient-2"
+      },
+      {
+        "Name": "Stop",
+        "Description": "Stop Playback",
+        "Type": "STOPPLAYBACK",
+        "Confirm": true
+      }
+    ],
+    "Type": "ITEMS",
+    "Logo": "ChurchLogo",
+    "Background": "background-gradient-1"
+  }
+]
