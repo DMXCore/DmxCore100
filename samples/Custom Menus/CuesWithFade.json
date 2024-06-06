@@ -1,0 +1,27 @@
+[
+  {
+    "Name": "Only Cues",
+    "Items": [
+      {
+        "Name": "Cues",
+        "Description": "All Cues",
+        "Type": "CUES",
+        "Loop": 0,
+        "FadeDurationMS": 3000
+      },
+      {
+        "Name": "Stop",
+        "Description": "Stop Playback",
+        "Type": "STOPPLAYBACK",
+        "Confirm": "True"
+      },
+      {
+        "Name": "Fade Out",
+        "Description": "Fade Out Playback",
+        "Type": "FADEOUTCUE",
+        "CueEndOption": "BLACKSTOP"
+      }
+    ],
+    "Type": "ITEMS"
+  }
+]
