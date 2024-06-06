@@ -1,0 +1,29 @@
+[
+  {
+    "Name": "Cues",
+    "Items": [
+      {
+        "Name": "Cue 1",
+        "Type": "CUE",
+        "DestinationCode": "CUE1",
+        "FadeDurationMS": 1500,
+        "Loop": 0
+      },
+      {
+        "Name": "Cue 2",
+        "Type": "CUE",
+        "DestinationCode": "CUE2",
+        "FadeDurationMS": 1500,
+        "Loop": 0
+      },
+      {
+        "Name": "Fade Out",
+        "Description": "Fade Out, black out and stop",
+        "Type": "FADEOUTCUE",
+        "CueEndOption": "BLACKSTOP"
+      }
+    ],
+    "Type": "ITEMS",
+    "Logo": "logo"
+  }
+]
