@@ -18,9 +18,8 @@
       },
       {
         "Name": "Fade Out",
-        "Description": "Fade Out, black out and stop",
-        "Type": "FADEOUTCUE",
-        "CueEndOption": "BLACKSTOP"
+        "Description": "Fade Out",
+        "Type": "FADEOUTCUE"
       }
     ],
     "Type": "ITEMS",
