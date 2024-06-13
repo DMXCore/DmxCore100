@@ -18,8 +18,7 @@
       {
         "Name": "Fade Out",
         "Description": "Fade Out Playback",
-        "Type": "FADEOUTCUE",
-        "CueEndOption": "BLACKSTOP"
+        "Type": "FADEOUTCUE"
       }
     ],
     "Type": "ITEMS"
