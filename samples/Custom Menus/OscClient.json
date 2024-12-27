@@ -1,0 +1,44 @@
+[
+  {
+    "Name": "Cues",
+    "Items": [
+      {
+        "Name": "Cue 1",
+        "Type": "CUE",
+        "DestinationCode": "CUE1",
+        "Loop": 0,
+        "FadeDurationMS": 1500
+      },
+      {
+        "Name": "Cue 2",
+        "Type": "CUE",
+        "DestinationCode": "CUE2",
+        "Loop": 0,
+        "FadeDurationMS": 1500
+      },
+      {
+        "Name": "Fade Out",
+        "Description": "Fade Out, black out and stop",
+        "Type": "FADEOUTCUE"
+      },
+      {
+        "Name": "OSC 1",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 1
+      },
+      {
+        "Name": "OSC 2",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      }
+    ],
+    "Type": "ITEMS",
+    "Logo": "logo"
+  }
+]
