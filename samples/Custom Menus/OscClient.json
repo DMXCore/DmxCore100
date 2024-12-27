@@ -1,26 +1,7 @@
 [
   {
-    "Name": "Cues",
+    "Name": "OSC Messages",
     "Items": [
-      {
-        "Name": "Cue 1",
-        "Type": "CUE",
-        "DestinationCode": "CUE1",
-        "Loop": 0,
-        "FadeDurationMS": 1500
-      },
-      {
-        "Name": "Cue 2",
-        "Type": "CUE",
-        "DestinationCode": "CUE2",
-        "Loop": 0,
-        "FadeDurationMS": 1500
-      },
-      {
-        "Name": "Fade Out",
-        "Description": "Fade Out, black out and stop",
-        "Type": "FADEOUTCUE"
-      },
       {
         "Name": "OSC 1",
         "Description": "Test OSC",
@@ -38,7 +19,6 @@
         "OscParameter": 0
       }
     ],
-    "Type": "ITEMS",
-    "Logo": "logo"
+    "Type": "ITEMS"
   }
 ]
