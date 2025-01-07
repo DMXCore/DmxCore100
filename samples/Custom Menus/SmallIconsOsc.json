@@ -1,0 +1,87 @@
+[
+  {
+    "Name": "OSC Messages",
+    "Items": [
+      {
+        "Name": "OSC 1",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 1
+      },
+      {
+        "Name": "OSC 2",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 3",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 4",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 5",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 6",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 7",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 8",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 9",
+        "Description": "Test OSC",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      },
+      {
+        "Name": "OSC 10 Test Test",
+        "Type": "OSC",
+        "OscClient": "192.168.241.23:9000",
+        "OscAddress": "/button11",
+        "OscParameter": 0
+      }
+    ],
+    "Type": "ITEMSSMALL"
+  }
+]
