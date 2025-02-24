@@ -11,10 +11,6 @@ from digitalio import DigitalInOut
 # Add settings.toml to your filesystem. Add your MQTT broker, username and key as well.
 # DO NOT share that file or commit it into Git or other source control.
 
-### Topic Setup ###
-mqtt_topic_input_base = "test/input"
-mqtt_topic_output_base = "test/output"
-
 cs = DigitalInOut(board.W5500_CS)
 spi_bus = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
@@ -42,6 +38,12 @@ output0.direction = digitalio.Direction.OUTPUT
 
 output1 = digitalio.DigitalInOut(board.GP13)
 output1.direction = digitalio.Direction.OUTPUT
+
+### Topic Setup ###
+mqtt_topic_input_base = "test/input"
+mqtt_topic_output_base = "test/output"
+
+### Code ###
 
 # Define callback methods which are called when events occur
 def connect(client, userdata, flags, rc):
@@ -77,6 +79,7 @@ client = MQTT.MQTT(
     is_ssl=False,
     socket_pool=pool,
     ssl_context=ssl_context,
+    socket_timeout=0.05
 )
 
 # Connect callback handlers to client
@@ -114,8 +117,8 @@ while True:
             last_input1_state = current_input1_state
 
         # Maintain MQTT connection and handle messages
-        client.loop()
-        time.sleep(0.01)
+        client.loop(0.05)
     except Exception as e:
         print(f"Error in main loop: {e}")
         time.sleep(5)
+
