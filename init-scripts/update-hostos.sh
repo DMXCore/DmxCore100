@@ -13,7 +13,8 @@ VIDEO_CONFIG=" video=HDMI-A-1:800x480M-32@60D"
 if grep -q "$VIDEO_CONFIG" "$CMDLINE_FILE"; then
   echo "Video configuration already exists in $CMDLINE_FILE"
 else
-  echo -n "$VIDEO_CONFIG" >> "$CMDLINE_FILE"
+  # Append to the same line (no newline)
+  sed -i "s/$/ $VIDEO_CONFIG/" "$CMDLINE_FILE"
   echo "Appended video configuration to $CMDLINE_FILE"
 fi
 
