@@ -23,16 +23,18 @@ mkdir -p "$OVERLAY_DIR"
 
 # Download dmxcore100.dtbo and overwrite existing file
 if cat /proc/device-tree/model | grep -q "Compute Module 5"; then
-	DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/dmxcore100-pi5.dtbo"
+  echo "Compute Module 5"
+  DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/dmxcore100-pi5.dtbo"
 elif cat /proc/device-tree/model | grep -q "Compute Module 4"; then
-	DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/dmxcore100.dtbo"
+  echo "Compute Module 4"
+  DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/dmxcore100.dtbo"
 else
-	echo "Unknown module"
+  echo "Unknown module"
 fi
 
 DEST_FILE="$OVERLAY_DIR/dmxcore100.dtbo"
 
-if curl -L --fail "$DOWNLOAD_URL" -o "$DEST_FILE"; then
+if curl -s -L --fail "$DOWNLOAD_URL" -o "$DEST_FILE"; then
   echo "Successfully downloaded dmxcore100.dtbo to $DEST_FILE"
 else
   echo "Failed to download dmxcore100.dtbo"
