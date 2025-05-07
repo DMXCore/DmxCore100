@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "This is the title",
+    "SubTitle": "This is a sub title",
+    "Items": [
+      {
+        "Name": "Cue 1",
+        "Description": "Test of cue 1",
+        "Type": "CUE",
+        "DestinationCode": "CUE1",
+        "Icon": "lock"
+      },
+      {
+        "Name": "Cue 2",
+        "Description": "Test of cue 2",
+        "Type": "CUE",
+        "DestinationCode": "CUE2"
+      },
+      {
+        "Name": "Dimmer",
+        "Type": "MASTERDIMMER"
+      }
+    ],
+    "Type": "ITEMS"
+  }
+]
