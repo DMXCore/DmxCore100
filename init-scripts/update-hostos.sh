@@ -102,7 +102,7 @@ else
   exit 1
 fi
 
-DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/#OVERLAY_FILE"
+DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/$OVERLAY_FILE"
 DEST_FILE="$OVERLAY_DIR/dmxcore100.dtbo"
 
 # Download the overlay
