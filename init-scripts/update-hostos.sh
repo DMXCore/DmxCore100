@@ -92,20 +92,22 @@ if [ ! -d "$OVERLAY_DIR" ]; then
 fi
 
 # Set download URL based on Compute Module
+OVERLAY_FILE=""
 if [ "$COMPUTE_MODULE" = "CM5" ]; then
-  DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/dmxcore100-pi5-$BASE_BOARD.dtbo"
+  OVERLAY_FILE="dmxcore100-pi5-$BASE_BOARD.dtbo"
 elif [ "$COMPUTE_MODULE" = "CM4" ]; then
-  DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/dmxcore100-$BASE_BOARD.dtbo"
+  OVERLAY_FILE="dmxcore100-$BASE_BOARD.dtbo"
 else
   echo "Error: Unknown module"
   exit 1
 fi
 
+DOWNLOAD_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/overlays/#OVERLAY_FILE"
 DEST_FILE="$OVERLAY_DIR/dmxcore100.dtbo"
 
 # Download the overlay
 if curl -s -L --fail "$DOWNLOAD_URL" -o "$DEST_FILE"; then
-  echo "Successfully downloaded dmxcore100.dtbo to $DEST_FILE"
+  echo "Successfully downloaded $OVERLAY_FILE to $DEST_FILE"
 else
   echo "Failed to download dmxcore100.dtbo from $DOWNLOAD_URL"
   exit 1
