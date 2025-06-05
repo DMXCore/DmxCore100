@@ -25,9 +25,9 @@ fi
 # Check if I2C bus 0 exists
 FOUND_MCP23008=false
 if [ ! -d "/sys/bus/i2c/devices/i2c-0" ]; then
-	echo ""
+  echo ""
   echo "*WARNING*: Unable to detect correct I2C buses, most likely this installation is missing the 'dtoverlay=dmxcore100' setting which will load the overlay for the necessary I2C bus configuration. You should run this script again after reboot."
-	echo ""
+  echo ""
   BASE_BOARD="v1"
 else
   # Step 1: Check for loaded MCP23008 driver in /sys/bus/i2c/devices
