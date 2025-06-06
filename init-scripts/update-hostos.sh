@@ -72,7 +72,7 @@ else
     for bus in /dev/i2c-*; do
       # Extract bus number from /dev/i2c-<number>
       bus_number=$(basename "$bus" | sed 's/i2c-//')
-      # Attempt to read 1 byte from IODIR register (0x00) at address 0x20
+      # Attempts to read 1 byte from IODIR register (0x00) at address 0x20
       if i2ctransfer -y "$bus_number" w1@0x20 0x00 r1 >/dev/null 2>&1; then
         echo "MCP23008 detected on bus $bus_number at address 0x20 via i2ctransfer - Hardware v2 confirmed"
         BASE_BOARD="v2"
@@ -145,6 +145,38 @@ else
   echo "Failed to download dmxcore100.dtbo from $DOWNLOAD_URL"
   exit 1
 fi
+
+# Download dmxcore-logo.png to /tmp and copy to splash directories
+SPLASH_DIR="/mnt/boot/splash"
+LOGO_FILE="/tmp/dmxcore-logo.png"
+LOGO_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/dmxcore-logo.png"
+
+# Verify splash directory exists
+if [ ! -d "$SPLASH_DIR" ]; then
+  echo "Error: $SPLASH_DIR not found or not mounted"
+  exit 1
+fi
+
+# Download the logo
+download_file "$LOGO_URL" "$LOGO_FILE"
+
+# Copy to both destinations
+cp "$LOGO_FILE" "$SPLASH_DIR/balena-logo.png"
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to copy dmxcore-logo.png to $SPLASH_DIR/balena-logo.png"
+  rm -f "$LOGO_FILE"
+  exit 1
+fi
+cp "$LOGO_FILE" "$SPLASH_DIR/balena-logo-default.png"
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to copy dmxcore-logo.png to $SPLASH_DIR/balena-logo-default.png"
+  rm -f "$LOGO_FILE"
+  exit 1
+fi
+echo "Successfully copied dmxcore-logo.png to $SPLASH_DIR/balena-logo.png and $SPLASH_DIR/balena-logo-default.png"
+
+# Clean up
+rm -f "$LOGO_FILE"
 
 # Perform EEPROM update for v2 only
 if [ "$BASE_BOARD" = "v2" ]; then
