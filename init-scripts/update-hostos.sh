@@ -126,10 +126,13 @@ fi
 
 # Set download URL based on Compute Module
 OVERLAY_FILE=""
+EDID_BUS_ID=""
 if [ "$COMPUTE_MODULE" = "CM5" ]; then
   OVERLAY_FILE="dmxcore100-pi5-$BASE_BOARD.dtbo"
+	EDID_BUS_ID="13"
 elif [ "$COMPUTE_MODULE" = "CM4" ]; then
   OVERLAY_FILE="dmxcore100-$BASE_BOARD.dtbo"
+	EDID_BUS_ID="20"
 else
   echo "Error: Unknown module"
   exit 1
@@ -200,7 +203,7 @@ if [ "$BASE_BOARD" = "v2" ]; then
   chmod +x "$SCRIPT_FILE"
 
   # Execute the EEPROM update script with the downloaded binary
-  "$SCRIPT_FILE" "$EDID_FILE"
+  "$SCRIPT_FILE" "$EDID_BUS_ID" "$EDID_FILE"
   if [ $? -ne 0 ]; then
       echo "Error: Failed to execute update-edid-eeprom.sh"
       rm -f "$EDID_FILE" "$SCRIPT_FILE"
