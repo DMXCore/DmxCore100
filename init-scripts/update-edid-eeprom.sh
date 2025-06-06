@@ -56,7 +56,6 @@ if cmp -s "$EEPROM_TEMP_BIN" "$INPUT_TEMP"; then
     rm "$EEPROM_TEMP_BIN" "$INPUT_TEMP"
     exit 0
 fi
-rm "$EEPROM_TEMP_BIN" "$INPUT_TEMP"
 
 echo "EEPROM contents do not match input file. Writing to EEPROM..."
 
@@ -70,13 +69,47 @@ for ((i=0; i<128; i+=8)); do
     for ((j=0; j<8; j++)); do
         PAGE_DATA+=("0x${DATA[$((i+j))]}")
     done
-    i2ctransfer -y 20 w9@0x50 $ADDR "${PAGE_DATA[@]}" >/dev/null 2>/dev/null
+    i2ctransfer -y 20 w9@0x50 $ADDR "${PAGE_DATA[@]}" >/dev/null
     if [ $? -ne 0 ]; then
         echo "Error: Failed to write page starting at address $ADDR."
+        rm "$EEPROM_TEMP_BIN" "$INPUT_TEMP"
         exit 1
     fi
     # Delay to respect EEPROM write cycle (~5ms)
     sleep 0.01
 done
 
-echo "Successfully wrote 128 bytes to EEPROM at I2C bus 20, address 0x50."
+# Verify the write by reading back the EEPROM
+EEPROM_VERIFY=$(mktemp /tmp/eeprom_verify.XXXXXX)
+EEPROM_VERIFY_BIN=$(mktemp /tmp/eeprom_verify_bin.XXXXXX)
+
+# Read 128 bytes again for verification
+for ((i=0; i<128; i+=8)); do
+    i2ctransfer -y 20 w1@0x50 $i r8@0x50 >> "$EEPROM_VERIFY" 2>/dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to read EEPROM for verification at address $i."
+        rm "$EEPROM_VERIFY" "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"
+        exit 1
+    fi
+done
+
+# Convert verification data to binary
+while read -r line; do
+    for hex in $line; do
+        hex_clean=${hex#0x}
+        printf "$(printf '\\x%s' "$hex_clean")" >> "$EEPROM_VERIFY_BIN"
+    done
+done < "$EEPROM_VERIFY"
+rm "$EEPROM_VERIFY"
+
+# Compare written data with input file
+if cmp -s "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"; then
+    echo "Successfully wrote and verified 128 bytes to EEPROM at I2C bus 20, address 0x50."
+else
+    echo "Error: Write verification failed. EEPROM contents do not match input file."
+    rm "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"
+    exit 1
+fi
+
+# Clean up
+rm "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"

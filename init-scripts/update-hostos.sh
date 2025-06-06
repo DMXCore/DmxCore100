@@ -6,6 +6,26 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+echo "Starting HostOS update..."
+
+# Function to download a file to /tmp
+download_file() {
+    local url="$1"
+    local output="$2"
+    if command -v curl >/dev/null 2>&1; then
+        curl -s -L "$url" -o "$output"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$url" -O "$output"
+    else
+        echo "Error: Neither curl nor wget is available to download files."
+        exit 1
+    fi
+    if [ $? -ne 0 ] || [ ! -f "$output" ]; then
+        echo "Error: Failed to download $url"
+        exit 1
+    fi
+}
+
 # Initialize variables
 COMPUTE_MODULE="Unknown"
 BASE_BOARD="v1"
@@ -118,5 +138,37 @@ else
   echo "Failed to download dmxcore100.dtbo from $DOWNLOAD_URL"
   exit 1
 fi
+
+# Download display_edid.bin to /tmp
+EDID_FILE="/tmp/display_edid.bin"
+download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/display_edid.bin" "$EDID_FILE"
+
+# Verify the downloaded file is exactly 128 bytes
+FILE_SIZE=$(stat -f%z "$EDID_FILE" 2>/dev/null || stat -c%s "$EDID_FILE")
+if [ "$FILE_SIZE" -ne 128 ]; then
+    echo "Error: Downloaded display_edid.bin is $FILE_SIZE bytes, expected 128 bytes."
+    rm -f "$EDID_FILE"
+    exit 1
+fi
+
+# Download update-edid-eeprom.sh to /tmp
+SCRIPT_FILE="/tmp/update-edid-eeprom.sh"
+download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/update-edid-eeprom.sh" "$SCRIPT_FILE"
+
+# Make the script executable
+chmod +x "$SCRIPT_FILE"
+
+# Execute the EEPROM update script with the downloaded binary
+"$SCRIPT_FILE" "$EDID_FILE"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to execute update-edid-eeprom.sh"
+    rm -f "$EDID_FILE" "$SCRIPT_FILE"
+    exit 1
+fi
+
+# Clean up
+rm -f "$EDID_FILE" "$SCRIPT_FILE"
+
+echo "HostOS update completed, including EEPROM update."
 
 exit 0
