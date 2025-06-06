@@ -85,27 +85,31 @@ fi
 
 echo "Base board version: $BASE_BOARD"
 
-# Append video configuration to cmdline.txt if not already present
+# Append video configuration to cmdline.txt for v1 only
 CMDLINE_FILE="/mnt/boot/cmdline.txt"
 VIDEO_CONFIG=" video=HDMI-A-1:800x480M-32@60D"
 
-# Verify cmdline.txt exists and is writable
-if [ ! -f "$CMDLINE_FILE" ]; then
-  echo "Error: $CMDLINE_FILE not found or not mounted"
-  exit 1
-fi
-
-if grep -q "$VIDEO_CONFIG" "$CMDLINE_FILE"; then
-  echo "Video configuration already exists in $CMDLINE_FILE"
-else
-  # Append to the same line (ensure no trailing newline issues)
-  echo -n "$VIDEO_CONFIG" >> "$CMDLINE_FILE"
-  if [ $? -eq 0 ]; then
-    echo "Appended video configuration to $CMDLINE_FILE"
-  else
-    echo "Error appending video configuration to $CMDLINE_FILE"
+if [ "$BASE_BOARD" = "v1" ]; then
+  # Verify cmdline.txt exists and is writable
+  if [ ! -f "$CMDLINE_FILE" ]; then
+    echo "Error: $CMDLINE_FILE not found or not mounted"
     exit 1
   fi
+
+  if grep -q "$VIDEO_CONFIG" "$CMDLINE_FILE"; then
+    echo "Video configuration already exists in $CMDLINE_FILE"
+  else
+    # Append to the same line (ensure no trailing newline issues)
+    echo -n "$VIDEO_CONFIG" >> "$CMDLINE_FILE"
+    if [ $? -eq 0 ]; then
+      echo "Appended video configuration to $CMDLINE_FILE"
+    else
+      echo "Error appending video configuration to $CMDLINE_FILE"
+      exit 1
+    fi
+  fi
+else
+  echo "Base board v2 detected, skipping video configuration append to $CMDLINE_FILE"
 fi
 
 # Download dmxcore100.dtbo and overwrite existing file
@@ -139,36 +143,41 @@ else
   exit 1
 fi
 
-# Download display_edid.bin to /tmp
-EDID_FILE="/tmp/display_edid.bin"
-download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/display_edid.bin" "$EDID_FILE"
+# Perform EEPROM update for v2 only
+if [ "$BASE_BOARD" = "v2" ]; then
+  # Download display_edid.bin to /tmp
+  EDID_FILE="/tmp/display_edid.bin"
+  download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/display_edid.bin" "$EDID_FILE"
 
-# Verify the downloaded file is exactly 128 bytes
-FILE_SIZE=$(stat -f%z "$EDID_FILE" 2>/dev/null || stat -c%s "$EDID_FILE")
-if [ "$FILE_SIZE" -ne 128 ]; then
-    echo "Error: Downloaded display_edid.bin is $FILE_SIZE bytes, expected 128 bytes."
-    rm -f "$EDID_FILE"
-    exit 1
+  # Verify the downloaded file is exactly 128 bytes
+  FILE_SIZE=$(stat -f%z "$EDID_FILE" 2>/dev/null || stat -c%s "$EDID_FILE")
+  if [ "$FILE_SIZE" -ne 128 ]; then
+      echo "Error: Downloaded display_edid.bin is $FILE_SIZE bytes, expected 128 bytes."
+      rm -f "$EDID_FILE"
+      exit 1
+  fi
+
+  # Download update-edid-eeprom.sh to /tmp
+  SCRIPT_FILE="/tmp/update-edid-eeprom.sh"
+  download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/update-edid-eeprom.sh" "$SCRIPT_FILE"
+
+  # Make the script executable
+  chmod +x "$SCRIPT_FILE"
+
+  # Execute the EEPROM update script with the downloaded binary
+  "$SCRIPT_FILE" "$EDID_FILE"
+  if [ $? -ne 0 ]; then
+      echo "Error: Failed to execute update-edid-eeprom.sh"
+      rm -f "$EDID_FILE" "$SCRIPT_FILE"
+      exit 1
+  fi
+
+  # Clean up
+  rm -f "$EDID_FILE" "$SCRIPT_FILE"
+else
+  echo "Base board v1 detected, skipping EEPROM update (no EEPROM present)."
 fi
 
-# Download update-edid-eeprom.sh to /tmp
-SCRIPT_FILE="/tmp/update-edid-eeprom.sh"
-download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/update-edid-eeprom.sh" "$SCRIPT_FILE"
-
-# Make the script executable
-chmod +x "$SCRIPT_FILE"
-
-# Execute the EEPROM update script with the downloaded binary
-"$SCRIPT_FILE" "$EDID_FILE"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to execute update-edid-eeprom.sh"
-    rm -f "$EDID_FILE" "$SCRIPT_FILE"
-    exit 1
-fi
-
-# Clean up
-rm -f "$EDID_FILE" "$SCRIPT_FILE"
-
-echo "HostOS update completed, including EEPROM update."
+echo "HostOS update completed."
 
 exit 0
