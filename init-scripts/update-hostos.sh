@@ -87,7 +87,7 @@ echo "Base board version: $BASE_BOARD"
 
 # Append video configuration to cmdline.txt for v1 only
 CMDLINE_FILE="/mnt/boot/cmdline.txt"
-VIDEO_CONFIG=" video=HDMI-A-1:800x480M-32@60D"
+VIDEO_CONFIG="video=HDMI-A-1:800x480M-32@60D"
 
 if [ "$BASE_BOARD" = "v1" ]; then
   # Verify cmdline.txt exists and is writable
@@ -96,11 +96,14 @@ if [ "$BASE_BOARD" = "v1" ]; then
     exit 1
   fi
 
-  if grep -q "$VIDEO_CONFIG" "$CMDLINE_FILE"; then
+  # Read the first (and only) line of cmdline.txt
+  CMDLINE_CONTENT=$(head -n 1 "$CMDLINE_FILE")
+
+  if echo "$CMDLINE_CONTENT" | grep -q "$VIDEO_CONFIG"; then
     echo "Video configuration already exists in $CMDLINE_FILE"
   else
-    # Append to the same line (ensure no trailing newline issues)
-    echo -n "$VIDEO_CONFIG" >> "$CMDLINE_FILE"
+    # Append video config to the first line and overwrite the file
+    echo -n "${CMDLINE_CONTENT} $VIDEO_CONFIG" > "$CMDLINE_FILE"
     if [ $? -eq 0 ]; then
       echo "Appended video configuration to $CMDLINE_FILE"
     else
