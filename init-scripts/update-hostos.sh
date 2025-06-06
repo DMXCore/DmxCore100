@@ -113,7 +113,7 @@ if [ "$BASE_BOARD" = "v1" ] || [ "$COMPUTE_MODULE" = "CM5" ]; then
     fi
   fi
 else
-  echo "Base board v2 detected, skipping video configuration append to $CMDLINE_FILE"
+  echo "Base board v2 on CM4 detected, skipping video configuration append to $CMDLINE_FILE"
 fi
 
 # Download dmxcore100.dtbo and overwrite existing file
