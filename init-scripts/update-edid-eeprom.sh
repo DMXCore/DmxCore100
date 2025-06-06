@@ -1,12 +1,19 @@
 #!/bin/bash
 
-# Check if input file is provided
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <input_file>"
+# Check if both bus ID and input file are provided
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <bus_id> <input_file>"
     exit 1
 fi
 
-INPUT_FILE="$1"
+BUS_ID="$1"
+INPUT_FILE="$2"
+
+# Check if bus ID is a valid number
+if ! [[ "$BUS_ID" =~ ^[0-9]+$ ]]; then
+    echo "Error: Bus ID must be a number."
+    exit 1
+fi
 
 # Check if input file exists
 if [ ! -f "$INPUT_FILE" ]; then
@@ -29,9 +36,9 @@ INPUT_TEMP=$(mktemp /tmp/input_temp.XXXXXX)
 # Read 128 bytes from EEPROM in 8-byte chunks
 for ((i=0; i<128; i+=8)); do
     # Read 8 bytes at a time (address + read command)
-    i2ctransfer -y 20 w1@0x50 $i r8@0x50 >> "$EEPROM_TEMP" 2>/dev/null
+    i2ctransfer -y "$BUS_ID" w1@0x50 $i r8@0x50 >> "$EEPROM_TEMP" 2>/dev/null
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to read EEPROM at address $i."
+        echo "Error: Failed to read EEPROM at address $i on bus $BUS_ID."
         rm "$EEPROM_TEMP" "$EEPROM_TEMP_BIN" "$INPUT_TEMP"
         exit 1
     fi
@@ -69,9 +76,9 @@ for ((i=0; i<128; i+=8)); do
     for ((j=0; j<8; j++)); do
         PAGE_DATA+=("0x${DATA[$((i+j))]}")
     done
-    i2ctransfer -y 20 w9@0x50 $ADDR "${PAGE_DATA[@]}" >/dev/null
+    i2ctransfer -y "$BUS_ID" w9@0x50 $ADDR "${PAGE_DATA[@]}" >/dev/null
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to write page starting at address $ADDR."
+        echo "Error: Failed to write page starting at address $ADDR on bus $BUS_ID."
         rm "$EEPROM_TEMP_BIN" "$INPUT_TEMP"
         exit 1
     fi
@@ -85,9 +92,9 @@ EEPROM_VERIFY_BIN=$(mktemp /tmp/eeprom_verify_bin.XXXXXX)
 
 # Read 128 bytes again for verification
 for ((i=0; i<128; i+=8)); do
-    i2ctransfer -y 20 w1@0x50 $i r8@0x50 >> "$EEPROM_VERIFY" 2>/dev/null
+    i2ctransfer -y "$BUS_ID" w1@0x50 $i r8@0x50 >> "$EEPROM_VERIFY" 2>/dev/null
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to read EEPROM for verification at address $i."
+        echo "Error: Failed to read EEPROM for verification at address $i on bus $BUS_ID."
         rm "$EEPROM_VERIFY" "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"
         exit 1
     fi
@@ -104,7 +111,7 @@ rm "$EEPROM_VERIFY"
 
 # Compare written data with input file
 if cmp -s "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"; then
-    echo "Successfully wrote and verified 128 bytes to EEPROM at I2C bus 20, address 0x50."
+    echo "Successfully wrote and verified 128 bytes to EEPROM at I2C bus $BUS_ID, address 0x50."
 else
     echo "Error: Write verification failed. EEPROM contents do not match input file."
     rm "$EEPROM_VERIFY_BIN" "$INPUT_TEMP"
