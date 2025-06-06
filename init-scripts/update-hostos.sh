@@ -89,7 +89,8 @@ echo "Base board version: $BASE_BOARD"
 CMDLINE_FILE="/mnt/boot/cmdline.txt"
 VIDEO_CONFIG="video=HDMI-A-1:800x480M-32@60D"
 
-if [ "$BASE_BOARD" = "v1" ]; then
+# Because CM5 doesn't seem to be able to spin up the video correctly from the EDID we'll just append the video line on that as well
+if [ "$BASE_BOARD" = "v1" ] || [ "$COMPUTE_MODULE" = "CM5" ]; then
   # Verify cmdline.txt exists and is writable
   if [ ! -f "$CMDLINE_FILE" ]; then
     echo "Error: $CMDLINE_FILE not found or not mounted"
