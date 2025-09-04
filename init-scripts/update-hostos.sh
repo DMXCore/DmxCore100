@@ -89,7 +89,6 @@ echo "Base board version: $BASE_BOARD"
 CMDLINE_FILE="/mnt/boot/cmdline.txt"
 VIDEO_CONFIG="video=HDMI-A-1:800x480M-32@60D"
 
-# Because CM5 doesn't seem to be able to spin up the video correctly from the EDID we'll just append the video line on that as well
 if [ "$BASE_BOARD" = "v1" ] || [ "$COMPUTE_MODULE" = "CM5" ]; then
   # Verify cmdline.txt exists and is writable
   if [ ! -f "$CMDLINE_FILE" ]; then
@@ -127,13 +126,10 @@ fi
 
 # Set download URL based on Compute Module
 OVERLAY_FILE=""
-EDID_BUS_ID=""
 if [ "$COMPUTE_MODULE" = "CM5" ]; then
   OVERLAY_FILE="dmxcore100-pi5-$BASE_BOARD.dtbo"
-	EDID_BUS_ID="13"
 elif [ "$COMPUTE_MODULE" = "CM4" ]; then
   OVERLAY_FILE="dmxcore100-$BASE_BOARD.dtbo"
-	EDID_BUS_ID="20"
 else
   echo "Error: Unknown module"
   exit 1
@@ -181,41 +177,6 @@ echo "Successfully copied dmxcore-logo.png to $SPLASH_DIR/balena-logo.png and $S
 
 # Clean up
 rm -f "$LOGO_FILE"
-
-# Perform EEPROM update for v2 only
-if [ "$BASE_BOARD" = "v2" ]; then
-  # Download display_edid.bin to /tmp
-  EDID_FILE="/tmp/display_edid.bin"
-  download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/display_edid.bin" "$EDID_FILE"
-
-  # Verify the downloaded file is exactly 128 bytes
-  FILE_SIZE=$(stat -f%z "$EDID_FILE" 2>/dev/null || stat -c%s "$EDID_FILE")
-  if [ "$FILE_SIZE" -ne 128 ]; then
-      echo "Error: Downloaded display_edid.bin is $FILE_SIZE bytes, expected 128 bytes."
-      rm -f "$EDID_FILE"
-      exit 1
-  fi
-
-  # Download update-edid-eeprom.sh to /tmp
-  SCRIPT_FILE="/tmp/update-edid-eeprom.sh"
-  download_file "https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/update-edid-eeprom.sh" "$SCRIPT_FILE"
-
-  # Make the script executable
-  chmod +x "$SCRIPT_FILE"
-
-  # Execute the EEPROM update script with the downloaded binary
-  "$SCRIPT_FILE" "$EDID_BUS_ID" "$EDID_FILE"
-  if [ $? -ne 0 ]; then
-      echo "Error: Failed to execute update-edid-eeprom.sh"
-      rm -f "$EDID_FILE" "$SCRIPT_FILE"
-      exit 1
-  fi
-
-  # Clean up
-  rm -f "$EDID_FILE" "$SCRIPT_FILE"
-else
-  echo "Base board v1 detected, skipping EEPROM update (no EEPROM present)."
-fi
 
 echo "HostOS update completed."
 
