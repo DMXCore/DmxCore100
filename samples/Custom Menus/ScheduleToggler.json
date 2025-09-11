@@ -1,0 +1,19 @@
+[
+  {
+    "Name": "Schedule Toggler",
+    "SubTitle": "Example to show how you can enable/disable schedules",
+    "Items": [
+      {
+        "Name": "Schedule A",
+        "Type": "SCHEDULETOGGLE",
+        "DestinationCode": "SCHD1"
+      },
+      {
+        "Name": "Schedule B",
+        "Type": "SCHEDULETOGGLE",
+        "DestinationCode": "SCHD2"
+      }
+    ],
+    "Type": "ITEMS"
+  }
+]
