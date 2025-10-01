@@ -83,6 +83,19 @@ else
   exit 1
 fi
 
+# Read and display CPU serial number
+CPU_SERIAL="Unknown"
+if [ -f /proc/cpuinfo ]; then
+  CPU_SERIAL=$(grep -i "^Serial" /proc/cpuinfo | awk '{print $3}')
+fi
+
+# Display the serial number
+if [ -n "$CPU_SERIAL" ] && [ "$CPU_SERIAL" != "Unknown" ]; then
+  echo "CPU Serial Number: $CPU_SERIAL"
+else
+  echo "CPU Serial Number: Not available"
+fi
+
 # If version is forced, use it; otherwise, detect the base board
 if [ -n "$FORCED_VERSION" ]; then
   echo "Forcing base board version: $FORCED_VERSION"
