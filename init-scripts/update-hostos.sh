@@ -202,10 +202,10 @@ else
   exit 1
 fi
 
-# Download dmxcore-logo.png to /tmp and copy to splash directories
+# Download boot image from API to /tmp and copy to splash directories
 SPLASH_DIR="/mnt/boot/splash"
 LOGO_FILE="/tmp/dmxcore-logo.png"
-LOGO_URL="https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/dmxcore-logo.png"
+LOGO_URL="https://api.dmxcore.com/bootimage/$CPU_SERIAL"
 
 # Verify splash directory exists
 if [ ! -d "$SPLASH_DIR" ]; then
