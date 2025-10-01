@@ -217,6 +217,10 @@ fi
 echo "Downloading boot logo from $LOGO_URL"
 download_file "$LOGO_URL" "$LOGO_FILE"
 
+# Output the file size
+LOGO_SIZE=$(wc -c < "$LOGO_FILE")
+echo "Downloaded logo size: $LOGO_SIZE bytes"
+
 # Copy to both destinations
 cp "$LOGO_FILE" "$SPLASH_DIR/balena-logo.png"
 if [ $? -ne 0 ]; then
