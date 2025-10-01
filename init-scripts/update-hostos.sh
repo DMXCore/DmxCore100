@@ -86,15 +86,7 @@ fi
 # Read and display CPU serial number
 CPU_SERIAL="Unknown"
 if [ -f /proc/cpuinfo ]; then
-  # Try to extract serial from /proc/cpuinfo (typical for Raspberry Pi)
   CPU_SERIAL=$(grep -i "^Serial" /proc/cpuinfo | awk '{print $3}')
-fi
-
-# If not found in cpuinfo, try device-tree
-if [ -z "$CPU_SERIAL" ] || [ "$CPU_SERIAL" = "Unknown" ]; then
-  if [ -f /proc/device-tree/serial-number ]; then
-    CPU_SERIAL=$(tr -d '\0' < /proc/device-tree/serial-number)
-  fi
 fi
 
 # Display the serial number
