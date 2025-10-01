@@ -205,7 +205,7 @@ fi
 # Download boot image from API to /tmp and copy to splash directories
 SPLASH_DIR="/mnt/boot/splash"
 LOGO_FILE="/tmp/dmxcore-logo.png"
-LOGO_URL="https://api.dmxcore.com/bootimage/$CPU_SERIAL"
+LOGO_URL="https://api.dmxcore.com/bootimage/$CPU_SERIAL.png"
 
 # Verify splash directory exists
 if [ ! -d "$SPLASH_DIR" ]; then
