@@ -221,6 +221,16 @@ download_file "$LOGO_URL" "$LOGO_FILE"
 LOGO_SIZE=$(wc -c < "$LOGO_FILE")
 echo "Downloaded logo size: $LOGO_SIZE bytes"
 
+# Calculate and display SHA256
+LOGO_SHA256=$(sha256sum "$LOGO_FILE" | awk '{print $1}')
+echo "Logo SHA256: $LOGO_SHA256"
+
+# Check if it's the standard DMX Core logo
+STANDARD_LOGO_SHA256="8a0a0c0d3904a457ae298f5b8fa2b7a88313fc0775c731f0c0336bfd5f9bf878"
+if [ "$LOGO_SHA256" = "$STANDARD_LOGO_SHA256" ]; then
+  echo "This is the Standard DMX Core logo"
+fi
+
 # Copy to both destinations
 cp "$LOGO_FILE" "$SPLASH_DIR/balena-logo.png"
 if [ $? -ne 0 ]; then
