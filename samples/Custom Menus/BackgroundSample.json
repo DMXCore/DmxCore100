@@ -9,13 +9,14 @@
         "SubTitle": "Pick a cue",
         "Type": "CUES",
         "Loop": 0,
-        "Background": "background-gradient-2"
+        "Background": "Pink"
       },
       {
         "Name": "Stop",
         "Description": "Stop Playback",
         "Type": "STOPPLAYBACK",
-        "Confirm": true
+        "Confirm": true,
+        "Background": "#409020"
       }
     ],
     "Type": "ITEMS",
