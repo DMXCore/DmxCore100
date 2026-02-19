@@ -25,3 +25,9 @@ curl -s -L https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-script
 ```
 
 **Note**: You have to reboot after to have the changes take affect.
+
+## For SNAP store applications (not applicable to DMX Core 100 hardware)
+Update the network config settings with this command:
+```bash
+curl -s -L https://github.com/DMXCore/DmxCore100/raw/refs/heads/main/init-scripts/set-network-config.sh?nocache=$(date +%s) | bash
+```
