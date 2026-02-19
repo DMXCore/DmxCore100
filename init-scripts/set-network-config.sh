@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 #
-# Increases specific kernel tunables ONLY if the new value is higher than current.
-# Optionally makes the minimum values persistent via /etc/sysctl.d/
+# DMXCore100 minimum kernel tunings
+# Applies higher values temporarily + always creates persistent config in /etc/sysctl.d/
 #
 
 set -u
 set -e
 
-# Target MINIMUM values we want to enforce
-readonly WANT_IGMP_MAX_MEMBERSHIPS=400
-readonly WANT_MAX_USER_NAMESPACES=10000
-readonly WANT_RMEM_MAX=5000000
-readonly WANT_WMEM_MAX=5000000
+# Desired minimum values
+IGMP=400
+NS=10000
+RMEM=5000000
+WMEM=5000000
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -22,105 +22,79 @@ check_root() {
 get_current() {
     local key="$1" val
     if [[ $key == /proc/* ]]; then
-        [[ -r "$key" ]] || die "Cannot read $key"
-        val=$(<"$key")
+        val=$(cat "$key" 2>/dev/null) || die "Cannot read $key"
     else
-        val=$(sysctl -n "$key" 2>/dev/null) || die "Cannot read sysctl key: $key"
+        val=$(sysctl -n "$key" 2>/dev/null) || die "Cannot read $key"
     fi
-    echo "${val//[[:space:]]/}"   # trim whitespace
+    echo "${val//[[:space:]]/}"
 }
 
-update_if_better() {
-    local key="$1" want="$2" current msg
+set_if_higher() {
+    local key="$1" want="$2" current
     current=$(get_current "$key")
     if (( current < want )); then
-        echo "Updating $key: $current → $want"
+        echo "Setting $key: $current → $want"
         if [[ $key == /proc/* ]]; then
-            echo "$want" > "$key" || die "Write failed: $key"
+            echo "$want" > "$key" || die "Failed writing to $key"
         else
-            sysctl -w "$key=$want" >/dev/null 2>&1 || {
-                echo "Warning: sysctl -w $key=$want failed (kernel may reject or already at limit)"
-            }
+            sysctl -w "$key=$want" >/dev/null 2>&1 || echo "  (sysctl -w failed – kernel may reject)"
         fi
     else
-        echo "Keeping $key = $current (already ≥ $want)"
+        echo "$key already ≥ $want ($current)"
     fi
 }
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Main
-# ──────────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 
 check_root
 
-echo "Checking and applying minimum kernel tunings..."
+echo "Applying DMXCore100 minimum tunings..."
 echo
 
-update_if_better "/proc/sys/net/ipv4/igmp_max_memberships" "$WANT_IGMP_MAX_MEMBERSHIPS"
-update_if_better "user.max_user_namespaces"                "$WANT_MAX_USER_NAMESPACES"
-update_if_better "net.core.rmem_max"                       "$WANT_RMEM_MAX"
-update_if_better "net.core.wmem_max"                       "$WANT_WMEM_MAX"
+set_if_higher "/proc/sys/net/ipv4/igmp_max_memberships" "$IGMP"
+set_if_higher "user.max_user_namespaces"                "$NS"
+set_if_higher "net.core.rmem_max"                       "$RMEM"
+set_if_higher "net.core.wmem_max"                       "$WMEM"
 
 echo
-echo "Current values after changes:"
-printf "%-28s = %s\n" "user.max_user_namespaces"     "$(sysctl -n user.max_user_namespaces     2>/dev/null || echo 'unknown')"
-printf "%-28s = %s\n" "net.core.rmem_max"            "$(sysctl -n net.core.rmem_max            2>/dev/null || echo 'unknown')"
-printf "%-28s = %s\n" "net.core.wmem_max"            "$(sysctl -n net.core.wmem_max            2>/dev/null || echo 'unknown')"
-printf "%-28s = %s\n" "net.ipv4.igmp_max_memberships" "$(cat /proc/sys/net/ipv4/igmp_max_memberships 2>/dev/null || echo 'unknown')"
+echo "Current values:"
+printf "  %-28s = %s\n" "net.ipv4.igmp_max_memberships" "$(get_current "/proc/sys/net/ipv4/igmp_max_memberships")"
+printf "  %-28s = %s\n" "user.max_user_namespaces"      "$(get_current "user.max_user_namespaces")"
+printf "  %-28s = %s\n" "net.core.rmem_max"             "$(get_current "net.core.rmem_max")"
+printf "  %-28s = %s\n" "net.core.wmem_max"             "$(get_current "net.core.wmem_max")"
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Persistence
-# ──────────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
+# Always create persistent file
+# ────────────────────────────────────────────────
 
-PERSIST_FILE="/etc/sysctl.d/99-dmxcore100.conf"
+CONF="/etc/sysctl.d/99-dmxcore100.conf"
 
 echo
-echo "Make these MINIMUM values persistent across reboots?"
-echo "This will create/overwrite $PERSIST_FILE (only keys where current < desired)"
-echo -n " (y/N): "
-read -r answer < /dev/tty
+echo "Creating persistent config → $CONF"
+cat << EOF | tee "$CONF"
+# DMXCore100 minimum kernel tunings
+# (kernel will ignore / warn if value is invalid or lower than allowed)
 
-if [[ "${answer^^}" =~ ^(Y|YES)$ ]]; then
-    echo "# Minimum enforced kernel tunables (applied only if kernel allows)" | sudo tee "$PERSIST_FILE" >/dev/null
+net.ipv4.igmp_max_memberships = $IGMP
+user.max_user_namespaces      = $NS
+net.core.rmem_max             = $RMEM
+net.core.wmem_max             = $WMEM
+EOF
 
-    local_igmp=$(get_current "/proc/sys/net/ipv4/igmp_max_memberships")
-    [[ $local_igmp -lt $WANT_IGMP_MAX_MEMBERSHIPS ]] && \
-        echo "net.ipv4.igmp_max_memberships = $WANT_IGMP_MAX_MEMBERSHIPS" | sudo tee -a "$PERSIST_FILE" >/dev/null
-
-    local_ns=$(get_current "user.max_user_namespaces")
-    [[ $local_ns -lt $WANT_MAX_USER_NAMESPACES ]] && \
-        echo "user.max_user_namespaces = $WANT_MAX_USER_NAMESPACES" | sudo tee -a "$PERSIST_FILE" >/dev/null
-
-    local_rmem=$(get_current "net.core.rmem_max")
-    [[ $local_rmem -lt $WANT_RMEM_MAX ]] && \
-        echo "net.core.rmem_max = $WANT_RMEM_MAX" | sudo tee -a "$PERSIST_FILE" >/dev/null
-
-    local_wmem=$(get_current "net.core.wmem_max")
-    [[ $local_wmem -lt $WANT_WMEM_MAX ]] && \
-        echo "net.core.wmem_max = $WANT_WMEM_MAX" | sudo tee -a "$PERSIST_FILE" >/dev/null
-
-    if [[ -s "$PERSIST_FILE" ]]; then
-        echo "→ Written to $PERSIST_FILE"
-        echo "Applying now (individual sysctl -w)..."
-        failed=0
-
-        sysctl -q -w user.max_user_namespaces="$WANT_MAX_USER_NAMESPACES"      2>/dev/null || ((failed++))
-        sysctl -q -w net.core.rmem_max="$WANT_RMEM_MAX"                        2>/dev/null || ((failed++))
-        sysctl -q -w net.core.wmem_max="$WANT_WMEM_MAX"                        2>/dev/null || ((failed++))
-        sysctl -q -w net.ipv4.igmp_max_memberships="$WANT_IGMP_MAX_MEMBERSHIPS" 2>/dev/null || ((failed++))
-
-        if (( failed == 0 )); then
-            echo "All settings applied successfully."
-        else
-            echo "Warning: $failed setting(s) could not be applied right now (kernel rejected value)."
-            echo "They are still saved in $PERSIST_FILE — they may apply on next boot or after config reload."
-        fi
-    else
-        echo "No settings need persistence (all already at or above desired)."
-        sudo rm -f "$PERSIST_FILE" 2>/dev/null || true
-    fi
+echo "Applying persistent settings now (sysctl --system)..."
+if sysctl --system >/dev/null 2>&1; then
+    echo "Success – settings loaded."
 else
-    echo "Skipped — changes remain temporary (until reboot)."
+    echo "Some warnings/errors during sysctl --system (see below)."
+    echo "Individual apply attempt:"
+    sysctl -w net.ipv4.igmp_max_memberships="$IGMP"     2>&1 | grep -v "setting key" || true
+    sysctl -w user.max_user_namespaces="$NS"            2>&1 | grep -v "setting key" || true
+    sysctl -w net.core.rmem_max="$RMEM"                 2>&1 | grep -v "setting key" || true
+    sysctl -w net.core.wmem_max="$WMEM"                 2>&1 | grep -v "setting key" || true
 fi
+
+echo
+echo "Done. Changes are active now and should survive reboot."
+echo "(If any value didn't apply, the kernel rejected it – check dmesg or kernel logs.)"
 
 exit 0
