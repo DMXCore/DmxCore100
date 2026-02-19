@@ -2,7 +2,7 @@
 #
 # DMXCore100 setup script:
 #   - Applies minimum kernel tunings (temporary + persistent)
-#   - Connects dmxcore100 snap to: alsa, hardware-observer, network-control
+#   - Connects dmxcore100 snap to: alsa, hardware-observe, network-control, raw-usb
 #
 
 set -u -e
@@ -112,20 +112,27 @@ if ! snap list "$SNAP_NAME" &>/dev/null; then
     echo "Warning: Snap '$SNAP_NAME' is not installed → skipping interface connections."
     echo "         Install it first with:   sudo snap install $SNAP_NAME"
 else
-    declare -a interfaces=("alsa" "hardware-observe" "network-control")
+    declare -a interfaces=("alsa" "hardware-observe" "network-control" "raw-usb")
 
     for iface in "${interfaces[@]}"; do
-        # Check if already connected (plug side)
-        if snap connections "$SNAP_NAME" | grep -q "^${iface}[[:space:]]\+${SNAP_NAME}:${iface}[[:space:]]\+"; then
-            echo "  $SNAP_NAME:$iface already connected"
-        else
-            echo "  Connecting $SNAP_NAME:$iface ..."
-            if sudo snap connect "$SNAP_NAME:$iface" 2>/dev/null; then
-                echo "    → success"
-            else
-                echo "    → failed (may require manual approval, not supported, or snap confinement issue)"
-                echo "      Try manually: sudo snap connect $SNAP_NAME:$iface"
+        # Parse connections output to check if Slot is NOT '-' (meaning connected)
+        connections_output=$(snap connections "$SNAP_NAME" | grep "^${iface} " || true)
+        if [[ -n "$connections_output" ]]; then
+            slot=$(echo "$connections_output" | awk '{print $3}')
+            if [[ "$slot" != "-" ]]; then
+                echo "  $SNAP_NAME:$iface already connected (to $slot)"
+                continue
             fi
+        fi
+
+        # Not connected → attempt connect
+        echo "  Connecting $SNAP_NAME:$iface ..."
+        if sudo snap connect "$SNAP_NAME:$iface" 2>/dev/null; then
+            echo "    → success (should now show 'manual' in Notes)"
+        else
+            echo "    → failed (may require store approval, snap not declaring the plug, or confinement issue)"
+            echo "      Try manually: sudo snap connect $SNAP_NAME:$iface"
+            echo "      Or check snap debug: snap debug connectivity"
         fi
     done
 fi
@@ -133,6 +140,7 @@ fi
 echo
 echo "Done."
 echo "Kernel changes (if any) are active and persistent."
-echo "Snap interfaces for dmxcore100 should now be connected (check with: snap connections $SNAP_NAME)"
+echo "Snap interfaces for dmxcore100 should now be connected (check with: snap connections dmxcore100)"
+echo "In Ubuntu Settings > Applications > dmxcore100, the permissions should now appear as enabled."
 
 exit 0
