@@ -72,7 +72,7 @@ printf "%-28s = %s\n" "net.ipv4.igmp_max_memberships" "$(cat /proc/sys/net/ipv4/
 # Persistence
 # ──────────────────────────────────────────────────────────────────────────────
 
-PERSIST_FILE="/etc/sysctl.d/99-custom-minimums.conf"
+PERSIST_FILE="/etc/sysctl.d/99-dmxcore100.conf"
 
 echo
 echo "Make these MINIMUM values persistent across reboots?"
