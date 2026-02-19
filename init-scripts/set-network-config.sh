@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 #
 # DMXCore100 minimum kernel tunings
-# Applies higher values temporarily + always creates persistent config in /etc/sysctl.d/
+# Applies higher values temporarily if needed.
+# Updates persistent config only if necessary, preserving existing settings.
 #
 
 set -u
 set -e
 
-# Desired minimum values
-IGMP=400
-NS=10000
-RMEM=5000000
-WMEM=5000000
+# Desired minimum values (as associative array)
+declare -A wants
+wants["net.ipv4.igmp_max_memberships"]=400
+wants["user.max_user_namespaces"]=10000
+wants["net.core.rmem_max"]=5000000
+wants["net.core.wmem_max"]=5000000
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -20,27 +22,21 @@ check_root() {
 }
 
 get_current() {
-    local key="$1" val
-    if [[ $key == /proc/* ]]; then
-        val=$(cat "$key" 2>/dev/null) || die "Cannot read $key"
-    else
-        val=$(sysctl -n "$key" 2>/dev/null) || die "Cannot read $key"
-    fi
-    echo "${val//[[:space:]]/}"
+    local key="$1"
+    val=$(sysctl -n "$key" 2>/dev/null) || die "Cannot read sysctl key: $key"
+    echo "${val//[[:space:]]/}"  # trim whitespace
 }
 
 set_if_higher() {
-    local key="$1" want="$2" current
+    local key="$1" current
     current=$(get_current "$key")
-    if (( current < want )); then
-        echo "Setting $key: $current → $want"
-        if [[ $key == /proc/* ]]; then
-            echo "$want" > "$key" || die "Failed writing to $key"
-        else
-            sysctl -w "$key=$want" >/dev/null 2>&1 || echo "  (sysctl -w failed – kernel may reject)"
-        fi
+    if (( current < wants[key] )); then
+        echo "Setting $key: $current → ${wants[$key]}"
+        sysctl -w "$key=${wants[$key]}" >/dev/null 2>&1 || echo "  (sysctl -w failed – kernel may reject)"
+        return 0  # needs persistence
     else
-        echo "$key already ≥ $want ($current)"
+        echo "$key already ≥ ${wants[$key]} ($current)"
+        return 1  # no need
     fi
 }
 
@@ -51,50 +47,73 @@ check_root
 echo "Applying DMXCore100 minimum tunings..."
 echo
 
-set_if_higher "/proc/sys/net/ipv4/igmp_max_memberships" "$IGMP"
-set_if_higher "user.max_user_namespaces"                "$NS"
-set_if_higher "net.core.rmem_max"                       "$RMEM"
-set_if_higher "net.core.wmem_max"                       "$WMEM"
+needed=()
+for key in "${!wants[@]}"; do
+    if set_if_higher "$key"; then
+        needed+=("$key")
+    fi
+done
 
 echo
 echo "Current values:"
-printf "  %-28s = %s\n" "net.ipv4.igmp_max_memberships" "$(get_current "/proc/sys/net/ipv4/igmp_max_memberships")"
-printf "  %-28s = %s\n" "user.max_user_namespaces"      "$(get_current "user.max_user_namespaces")"
-printf "  %-28s = %s\n" "net.core.rmem_max"             "$(get_current "net.core.rmem_max")"
-printf "  %-28s = %s\n" "net.core.wmem_max"             "$(get_current "net.core.wmem_max")"
+for key in "${!wants[@]}"; do
+    printf "  %-28s = %s\n" "$key" "$(get_current "$key")"
+done
 
 # ────────────────────────────────────────────────
-# Always create persistent file
+# Persistent config (only update if needed, preserve existing)
 # ────────────────────────────────────────────────
 
-CONF="/etc/sysctl.d/99-dmxcore100.conf"
+PERSIST_FILE="/etc/sysctl.d/99-dmxcore100.conf"
 
-echo
-echo "Creating persistent config → $CONF"
-cat << EOF | tee "$CONF"
-# DMXCore100 minimum kernel tunings
-# (kernel will ignore / warn if value is invalid or lower than allowed)
+if [ ${#needed[@]} -gt 0 ]; then
+    # Read existing if file exists
+    declare -A existing
+    if [ -f "$PERSIST_FILE" ]; then
+        while read -r line; do
+            line="${line%%#*}"  # remove comment
+            if [[ $line =~ ^[[:space:]]*([a-z0-9._-]+)[[:space:]]*=[[:space:]]*([0-9]+)[[:space:]]*$ ]]; then
+                k="${BASH_REMATCH[1]}"
+                v="${BASH_REMATCH[2]}"
+                existing["$k"]="$v"
+            fi
+        done < "$PERSIST_FILE"
+    fi
 
-net.ipv4.igmp_max_memberships = $IGMP
-user.max_user_namespaces      = $NS
-net.core.rmem_max             = $RMEM
-net.core.wmem_max             = $WMEM
-EOF
+    # Add/update the needed ones
+    for need in "${needed[@]}"; do
+        existing["$need"]="${wants[$need]}"
+    done
 
-echo "Applying persistent settings now (sysctl --system)..."
-if sysctl --system >/dev/null 2>&1; then
-    echo "Success – settings loaded."
+    # Write back (create/overwrite with all current entries)
+    {
+        echo "# DMXCore100 minimum kernel tunings"
+        echo "# (only sets values where needed to enforce minimums)"
+        for k in $(printf '%s\n' "${!existing[@]}" | sort); do  # sorted for consistency
+            echo "$k = ${existing[$k]}"
+        done
+    } > "$PERSIST_FILE"
+
+    echo
+    echo "Updated persistent config → $PERSIST_FILE"
+
+    # Apply immediately
+    echo "Applying persistent settings now (sysctl --system)..."
+    if sysctl --system >/dev/null 2>&1; then
+        echo "Success – settings loaded."
+    else
+        echo "Some warnings/errors during sysctl --system."
+        echo "Individual apply attempt:"
+        for key in "${needed[@]}"; do
+            sysctl -w "$key=${wants[$key]}" 2>&1 || true
+        done
+    fi
 else
-    echo "Some warnings/errors during sysctl --system (see below)."
-    echo "Individual apply attempt:"
-    sysctl -w net.ipv4.igmp_max_memberships="$IGMP"     2>&1 | grep -v "setting key" || true
-    sysctl -w user.max_user_namespaces="$NS"            2>&1 | grep -v "setting key" || true
-    sysctl -w net.core.rmem_max="$RMEM"                 2>&1 | grep -v "setting key" || true
-    sysctl -w net.core.wmem_max="$WMEM"                 2>&1 | grep -v "setting key" || true
+    echo
+    echo "No persistence changes needed (all values already meet or exceed minimums)."
 fi
 
 echo
-echo "Done. Changes are active now and should survive reboot."
-echo "(If any value didn't apply, the kernel rejected it – check dmesg or kernel logs.)"
+echo "Done. Changes (if any) are active now and should survive reboot."
 
 exit 0
