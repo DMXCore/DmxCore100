@@ -3,6 +3,7 @@
 # DMXCore100 setup script:
 #   - Applies minimum kernel tunings (temporary + persistent)
 #   - Connects dmxcore100 snap to: alsa, hardware-observe, network-control, raw-usb
+#   - Adds the invoking user (via SUDO_USER) to the dialout group
 #
 
 set -u -e
@@ -135,6 +136,30 @@ else
             echo "      Or check snap debug: snap debug connectivity"
         fi
     done
+fi
+
+# ────────────────────────────────────────────────
+# Add invoking user to dialout group
+# ────────────────────────────────────────────────
+
+echo
+echo "Configuring dialout group membership..."
+
+if [[ -n "${SUDO_USER:-}" ]]; then
+    if id -nG "$SUDO_USER" | grep -qw "dialout"; then
+        echo "  $SUDO_USER is already a member of the dialout group."
+    else
+        echo "  Adding $SUDO_USER to the dialout group..."
+        if usermod -aG dialout "$SUDO_USER"; then
+            echo "  Done. Note: $SUDO_USER must log out and back in (or run 'newgrp dialout') for group membership to take effect."
+        else
+            echo "  Warning: Failed to add $SUDO_USER to the dialout group."
+        fi
+    fi
+else
+    echo "  Warning: Could not determine the invoking user (SUDO_USER is not set)."
+    echo "           Run this script with sudo to automatically add your user to the dialout group."
+    echo "           Or run manually: sudo usermod -aG dialout \$USER"
 fi
 
 echo
