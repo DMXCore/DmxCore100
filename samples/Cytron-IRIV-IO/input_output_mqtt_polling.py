@@ -15,6 +15,34 @@ from digitalio import DigitalInOut
 # mqtt_username = "client"
 # mqtt_password = "123456"
 # topic_base = "cytron-iriv"
+# eth_use_dhcp = "false"  # true = DHCP, false = static values below
+# ETH_IP = "192.168.1.177"
+# ETH_SUBNET = "255.255.255.0"
+# ETH_GATEWAY = "192.168.1.1"
+# ETH_DNS = "8.8.8.8"
+
+
+# Read from settings.toml
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes", "on")
+
+def str_to_tuple(s):
+    return tuple(int(x) for x in s.split("."))
+
+USE_DHCP = env_bool("ETH_USE_DHCP", env_bool("eth_use_dhcp", False))
+
+ip_str      = os.getenv("ETH_IP", "192.168.1.177")
+subnet_str  = os.getenv("ETH_SUBNET", "255.255.255.0")
+gateway_str = os.getenv("ETH_GATEWAY", "192.168.1.1")
+dns_str     = os.getenv("ETH_DNS", "8.8.8.8")
+
+IP_ADDRESS  = str_to_tuple(ip_str)
+SUBNET_MASK = str_to_tuple(subnet_str)
+GATEWAY     = str_to_tuple(gateway_str)
+DNS_SERVER  = str_to_tuple(dns_str)
 
 
 cs = DigitalInOut(board.W5500_CS)
@@ -22,6 +50,11 @@ spi_bus = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
 # Initialize ethernet interface
 eth = WIZNET5K(spi_bus, cs)
+if USE_DHCP:
+    print("Ethernet mode: DHCP")
+else:
+    print("Ethernet mode: Static")
+    eth.ifconfig = (IP_ADDRESS, SUBNET_MASK, GATEWAY, DNS_SERVER)
 
 # Verify Ethernet connection
 ip = eth.pretty_ip(eth.ip_address)
