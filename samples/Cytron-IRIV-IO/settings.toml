@@ -6,13 +6,13 @@ MODBUS_RTU_BAUDRATE = 9600
 # Valid Range = 1 to 247.
 MODBUS_RTU_SLAVE_ADDRESS = 1
 
-mqtt_server = "192.168.123.200"
-mqtt_username = "client"
-mqtt_password = "123456"
-topic_base = "dmxcore100"
-
-# Ethernet static config (custom keys - names are up to you)
-ETH_IP      = "192.168.123.202"
-ETH_SUBNET  = "255.255.255.0"
-ETH_GATEWAY = "192.168.123.1"
-ETH_DNS     = "8.8.8.8"
+# Example settings.toml
+mqtt_server     = "192.168.240.94"
+mqtt_username   = "client"
+mqtt_password   = "123456"
+topic_base      = "cytron-iriv"
+eth_use_dhcp    = true          # boolean as "true"/"false" string, or 1/0
+eth_ip          = "192.168.1.177"
+eth_subnet      = "255.255.255.0"
+eth_gateway     = "192.168.1.1"
+eth_dns         = "8.8.8.8"
