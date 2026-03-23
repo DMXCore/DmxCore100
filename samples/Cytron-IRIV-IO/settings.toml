@@ -11,7 +11,8 @@ mqtt_server     = "192.168.240.94"
 mqtt_username   = "client"
 mqtt_password   = "123456"
 topic_base      = "cytron-iriv"
-eth_use_dhcp    = true          # boolean as "true"/"false" string, or 1/0
+
+eth_use_dhcp    = "true"          # boolean as "true"/"false" string, or 1/0
 eth_ip          = "192.168.1.177"
 eth_subnet      = "255.255.255.0"
 eth_gateway     = "192.168.1.1"

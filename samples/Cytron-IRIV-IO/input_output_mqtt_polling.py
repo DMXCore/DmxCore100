@@ -9,48 +9,64 @@ import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_minimqtt.adafruit_minimqtt import MMQTTException
 from digitalio import DigitalInOut
 
-# ═════════════════════════════════════════════════════════════════
-# Add these to your settings.toml file (all keys lowercase + underscores)
+# ════════════════════════════════════════════════════════════════════════
+# settings.toml reference – use these exact lowercase keys
 
-# mqtt_server     = "192.168.240.94"
+# mqtt_server     = "192.168.123.200"
 # mqtt_username   = "client"
 # mqtt_password   = "123456"
-# topic_base      = "cytron-iriv"
-# eth_use_dhcp    = false          # or true / "true" / "false" / "1" / "0"
-# eth_ip          = "192.168.1.177"
+# topic_base      = "dmxcore100"
+# eth_use_dhcp    = false
+# eth_ip          = "192.168.123.202"
 # eth_subnet      = "255.255.255.0"
-# eth_gateway     = "192.168.1.1"
+# eth_gateway     = "192.168.123.1"
 # eth_dns         = "8.8.8.8"
 
-# DO NOT commit settings.toml to version control!
-
-# ═════════════════════════════════════════════════════════════════
-# Read settings from settings.toml
+# ════════════════════════════════════════════════════════════════════════
+# Helpers
 
 def env_bool(name, default=False):
     value = os.getenv(name)
     if value is None:
         return default
-    val = value.strip().lower()
-    return val in ("true", "1", "yes", "on")
+    return value.strip().lower() in ("true", "1", "yes", "on", "t", "y")
+
+
+def str_to_tuple(s, default=(0, 0, 0, 0)):
+    if s is None:
+        print(f"Warning: IP setting missing → using default {default}")
+        return default
+    s = s.strip()
+    if not s:
+        print(f"Warning: Empty IP string → using default {default}")
+        return default
+    try:
+        parts = [int(x.strip()) for x in s.split(".") if x.strip()]
+        if len(parts) != 4 or not all(0 <= p <= 255 for p in parts):
+            raise ValueError(f"Invalid IP format: '{s}'")
+        return tuple(parts)
+    except Exception as e:
+        print(f"Warning: Cannot parse IP '{s}' → {e} → using default {default}")
+        return default
+
+
+# ════════════════════════════════════════════════════════════════════════
+# Read settings
 
 USE_DHCP = env_bool("eth_use_dhcp", False)
 
-ip_str      = os.getenv("eth_ip",       "192.168.1.177")
-subnet_str  = os.getenv("eth_subnet",   "255.255.255.0")
-gateway_str = os.getenv("eth_gateway",  "192.168.1.1")
-dns_str     = os.getenv("eth_dns",      "8.8.8.8")
-
-def str_to_tuple(s):
-    return tuple(int(x) for x in s.split("."))
+ip_str      = (os.getenv("eth_ip")      or "192.168.123.202").strip()
+subnet_str  = (os.getenv("eth_subnet")  or "255.255.255.0").strip()
+gateway_str = (os.getenv("eth_gateway") or "192.168.123.1").strip()
+dns_str     = (os.getenv("eth_dns")     or "8.8.8.8").strip()
 
 IP_ADDRESS  = str_to_tuple(ip_str)
 SUBNET_MASK = str_to_tuple(subnet_str)
 GATEWAY     = str_to_tuple(gateway_str)
 DNS_SERVER  = str_to_tuple(dns_str)
 
-# ═════════════════════════════════════════════════════════════════
-# Ethernet setup
+# ════════════════════════════════════════════════════════════════════════
+# Ethernet
 
 cs = DigitalInOut(board.W5500_CS)
 spi_bus = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
@@ -68,8 +84,8 @@ print("IP Address:", ip)
 if not ip or ip == "0.0.0.0":
     raise RuntimeError("Failed to obtain valid IP address. Check Ethernet connection.")
 
-# ═════════════════════════════════════════════════════════════════
-# GPIO setup
+# ════════════════════════════════════════════════════════════════════════
+# GPIO
 
 input0 = digitalio.DigitalInOut(board.GP0)
 input0.direction = digitalio.Direction.INPUT
@@ -102,19 +118,21 @@ output3.direction = digitalio.Direction.OUTPUT
 led = digitalio.DigitalInOut(board.GP29)
 led.direction = digitalio.Direction.OUTPUT
 
-# ═════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════════
 # MQTT topics
 
-topic_base = os.getenv("topic_base", "cytron-iriv")
+topic_base = os.getenv("topic_base", "dmxcore100")
 mqtt_topic_input_base  = topic_base + "/i"
 mqtt_topic_output_base = topic_base + "/o"
 
-# ═════════════════════════════════════════════════════════════════
-# MQTT configuration
+# ════════════════════════════════════════════════════════════════════════
+# MQTT config
 
 MQTT_RECONNECT_BASE_DELAY = 5
-MQTT_RECONNECT_MAX_DELAY  = 300    # 5 minutes max backoff
+MQTT_RECONNECT_MAX_DELAY  = 300
 MQTT_KEEPALIVE            = 60
+LOOP_TIMEOUT              = 0.2
+SOCKET_TIMEOUT            = 0.2
 
 pool = adafruit_connection_manager.get_radio_socketpool(eth)
 ssl_context = adafruit_connection_manager.get_radio_ssl_context(eth)
@@ -126,12 +144,12 @@ client = MQTT.MQTT(
     is_ssl=False,
     socket_pool=pool,
     ssl_context=ssl_context,
-    socket_timeout=0.1,
+    socket_timeout=SOCKET_TIMEOUT,
     keep_alive=MQTT_KEEPALIVE
 )
 
-# ═════════════════════════════════════════════════════════════════
-# MQTT callbacks
+# ════════════════════════════════════════════════════════════════════════
+# Callbacks
 
 def connect(client, userdata, flags, rc):
     print("Connected to MQTT Broker!")
@@ -150,7 +168,7 @@ def publish(client, userdata, topic, pid):
 
 def message(client, topic, message):
     print(f"Message on {topic}: {message}")
-    msg = message.strip().lower()
+    msg = str(message).strip().lower()
     val = msg in ("true", "1", "on", "yes", "high")
     if topic == f"{mqtt_topic_output_base}/0":
         output0.value = val
@@ -170,7 +188,7 @@ client.on_unsubscribe = unsubscribe
 client.on_publish    = publish
 client.on_message    = message
 
-# ═════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════════
 # Reconnect helper
 
 def safe_mqtt_reconnect():
@@ -179,10 +197,9 @@ def safe_mqtt_reconnect():
             client.disconnect()
         except:
             pass
-
     print("MQTT reconnect attempt...", end="")
     try:
-        rc = client.reconnect()  # auto-resubscribes by default
+        rc = client.reconnect()  # auto-resubscribes
         print(f" success (rc={rc})")
         client.publish(f"{mqtt_topic_input_base}/status", "reconnected")
         return True
@@ -190,8 +207,8 @@ def safe_mqtt_reconnect():
         print(f" failed: {e}")
         return False
 
-# ═════════════════════════════════════════════════════════════════
-# Initial connection - retry forever until success
+# ════════════════════════════════════════════════════════════════════════
+# Initial connect
 
 print(f"Connecting to MQTT broker: {client.broker}")
 delay = MQTT_RECONNECT_BASE_DELAY
@@ -204,7 +221,7 @@ while True:
 
 client.publish(f"{mqtt_topic_input_base}/status", "connected")
 
-# ═════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════════
 # Input state tracking
 
 last_input0_state = input0.value
@@ -216,32 +233,35 @@ last_input3_state = input3.value
 last_status_time = time.monotonic()
 STATUS_INTERVAL = 300  # 5 minutes
 
-# ═════════════════════════════════════════════════════════════════
-# Main loop - designed to never exit
+# ════════════════════════════════════════════════════════════════════════
+# Main loop
 
 while True:
     now = time.monotonic()
 
-    # Process inputs unconditionally
-    for pin, last_var_name, topic_suffix in [
+    # Process inputs – single place, no duplication
+    for pin, last_var_name, suffix in [
         (input0, 'last_input0_state', "0"),
         (input1, 'last_input1_state', "1"),
         (input2, 'last_input2_state', "2"),
         (input3, 'last_input3_state', "3"),
     ]:
         current = pin.value
-        last_state = locals()[last_var_name]
-        if current != last_state:
+        last = locals()[last_var_name]
+        if current != last:
             locals()[last_var_name] = current
+            # With Pull.UP: pressed = low (False) → publish 1 when pressed
+            payload = str(int(current))
             try:
-                client.publish(f"{mqtt_topic_input_base}/{topic_suffix}", str(int(current)))
-            except:
-                pass  # will retry after reconnect
+                client.publish(f"{mqtt_topic_input_base}/{suffix}", payload)
+                print(f"Published {mqtt_topic_input_base}/{suffix} → {payload}")
+            except Exception:
+                pass  # retry after reconnect
 
-    # MQTT when connected
+    # MQTT maintenance
     if client.is_connected():
         try:
-            client.loop(timeout=0.05)
+            client.loop(timeout=LOOP_TIMEOUT)
 
             if now - last_status_time >= STATUS_INTERVAL:
                 try:
@@ -257,7 +277,7 @@ while True:
             except:
                 pass
 
-    # Reconnect if disconnected - loops until success
+    # Reconnect if needed
     if not client.is_connected():
         print("MQTT disconnected → reconnecting...")
         delay = MQTT_RECONNECT_BASE_DELAY
@@ -269,8 +289,6 @@ while True:
             sleep_time = min(delay * (2 ** (attempt - 1)), MQTT_RECONNECT_MAX_DELAY)
             print(f"Attempt {attempt} failed → wait {sleep_time:.0f}s")
             time.sleep(sleep_time)
-
-            # Optional Ethernet refresh after many failures
             if attempt % 10 == 0 and attempt > 0:
                 print("Long failure → refreshing Ethernet")
                 try:
@@ -278,4 +296,4 @@ while True:
                 except:
                     pass
 
-    time.sleep(0.02)  # prevent tight loop
+    time.sleep(0.02)  # avoid busy loop
