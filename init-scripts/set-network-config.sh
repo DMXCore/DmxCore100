@@ -13,7 +13,7 @@ set -u -e
 # ────────────────────────────────────────────────
 
 declare -A targets=(
-  ["net.ipv4.igmp_max_memberships"]=400
+  ["net.ipv4.igmp_max_memberships"]=1024
   ["user.max_user_namespaces"]=10000
   ["net.core.rmem_max"]=5000000
   ["net.core.wmem_max"]=5000000
